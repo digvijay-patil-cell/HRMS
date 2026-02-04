@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'https://hrms-lx48.onrender.com/api';
 
 // Employee API calls
 export const employeeAPI = {
