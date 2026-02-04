@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field, validator
-from typing import Optional, List
+from pydantic import BaseModel, field_validator, ConfigDict
+from typing import List
 from datetime import date
 
 
@@ -9,20 +9,22 @@ class AttendanceCreate(BaseModel):
     date: date
     status: str
 
-    @validator('status')
+    @field_validator('status')
+    @classmethod
     def validate_status(cls, v):
         if v not in ['Present', 'Absent']:
             raise ValueError('Status must be either "Present" or "Absent"')
         return v
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "employee_id": "EMP001",
                 "date": "2026-02-04",
                 "status": "Present"
             }
         }
+    )
 
 
 class AttendanceResponse(BaseModel):
@@ -33,8 +35,7 @@ class AttendanceResponse(BaseModel):
     date: date
     status: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AttendanceListResponse(BaseModel):

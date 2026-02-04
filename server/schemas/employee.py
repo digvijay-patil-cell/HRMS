@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr, validator
-from typing import Optional, List
+from pydantic import BaseModel, EmailStr, field_validator, ConfigDict
+from typing import List
 from datetime import datetime
 
 
@@ -10,26 +10,29 @@ class EmployeeCreate(BaseModel):
     email: EmailStr
     department: str
 
-    @validator('employee_id')
+    @field_validator('employee_id')
+    @classmethod
     def validate_employee_id(cls, v):
         if not v or len(v) > 20:
             raise ValueError('Employee ID must be 1-20 characters')
         return v
 
-    @validator('full_name')
+    @field_validator('full_name')
+    @classmethod
     def validate_full_name(cls, v):
         if not v or len(v) > 100:
             raise ValueError('Full name must be 1-100 characters')
         return v
 
-    @validator('department')
+    @field_validator('department')
+    @classmethod
     def validate_department(cls, v):
         if not v or len(v) > 50:
             raise ValueError('Department must be 1-50 characters')
         return v
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "employee_id": "EMP001",
                 "full_name": "John Doe",
@@ -37,6 +40,7 @@ class EmployeeCreate(BaseModel):
                 "department": "Engineering"
             }
         }
+    )
 
 
 class EmployeeResponse(BaseModel):
@@ -48,8 +52,7 @@ class EmployeeResponse(BaseModel):
     department: str
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EmployeeListResponse(BaseModel):
